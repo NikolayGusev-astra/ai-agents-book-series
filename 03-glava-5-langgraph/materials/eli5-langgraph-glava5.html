@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>От цепочек к графу: глава 5 книги</title>
+<style>
+  :root{
+    --ink:#1a1d29;
+    --paper:#f7f5ef;
+    --blue:#4a7fb5;
+    --red:#c96f4a;
+    --green:#5aa17f;
+    --muted:#6b6f7d;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;
+    max-width:860px;
+    margin:0 auto;
+    padding:60px 32px 100px;
+    line-height:1.5;
+  }
+  h1{font-size:48px;line-height:1.15;margin-bottom:14px;}
+  .sub{font-size:23px;color:var(--muted);margin-bottom:50px;}
+  .question{font-size:28px;margin:60px 0 40px;border-left:6px solid var(--ink);padding-left:22px;}
+  section{margin-bottom:80px;}
+  .tag{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border:2px solid;margin-bottom:16px;}
+  svg{display:block;width:100%;height:auto;margin:20px 0 16px;}
+  p{font-size:21px;max-width:660px;}
+  .why{font-size:19px;color:var(--muted);margin-top:12px;font-style:italic;}
+  .vs{display:grid;grid-template-columns:1fr 90px 1fr;align-items:stretch;gap:0;margin:28px 0 12px;}
+  .vs .col{padding:24px 22px;border-radius:14px;color:#fff;}
+  .vs .mid{display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;color:var(--muted);font-family:Arial,sans-serif;}
+  .vs .col h3{font-size:24px;margin-bottom:10px;}
+  .vs .col p{font-size:18px;line-height:1.45;color:rgba(255,255,255,.93);}
+  pre{background:#1a1d29;color:#d9d6cc;border-radius:12px;padding:22px 26px;font-size:17px;line-height:1.55;font-family:Consolas,monospace;overflow-x:auto;max-width:760px;}
+  pre .c{color:#7a8aa8;}
+  pre .k{color:#e8a87c;}
+  .verdict{font-size:24px;margin-top:36px;padding:26px 28px;background:#fff;border:3px solid var(--ink);border-radius:16px;max-width:720px;}
+  .final{margin-top:80px;padding:38px 34px;background:var(--ink);color:var(--paper);border-radius:18px;}
+  .final h2{font-size:32px;margin-bottom:14px;}
+  .final p{font-size:21px;color:#d9d6cc;}
+  .final b{color:#fff;}
+  footer{margin-top:70px;font-size:16px;color:var(--muted);font-family:Arial,sans-serif;}
+</style>
+</head>
+<body>
+
+<h1>От цепочек к графу</h1>
+<p class="sub">Глава 5 книги «AI Agents and Applications»: LangGraph, состояние и условные переходы</p>
+
+<div class="question">Глава 1 спросила: кто принимает решение? Глава 5 уточняет: <u>где живёт состояние</u>?</div>
+
+<!-- ============ WORKFLOW VS AGENT ============ -->
+<section>
+  <span class="tag" style="color:var(--blue);border-color:var(--blue);">Два паттерна</span>
+  <svg viewBox="0 0 780 240">
+    <g font-family="Georgia" font-size="18">
+      <!-- workflow -->
+      <rect x="20" y="40" width="330" height="150" rx="14" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/>
+      <text x="185" y="70" text-anchor="middle" font-weight="bold" fill="#1a1d29">Agentic workflow</text>
+      <circle cx="80" cy="120" r="18" fill="#4a7fb5"/><circle cx="185" cy="120" r="18" fill="#4a7fb5"/><circle cx="290" cy="120" r="18" fill="#4a7fb5"/>
+      <line x1="98" y1="120" x2="167" y2="120" stroke="#4a7fb5" stroke-width="3"/>
+      <line x1="203" y1="120" x2="272" y2="120" stroke="#4a7fb5" stroke-width="3"/>
+      <text x="185" y="170" text-anchor="middle" font-size="15" fill="#6b6f7d" font-family="Arial">выбор из готовых веток, топология фиксирована</text>
+      <!-- agent -->
+      <rect x="430" y="40" width="330" height="150" rx="14" fill="#f9ede7" stroke="#c96f4a" stroke-width="2.5"/>
+      <text x="595" y="70" text-anchor="middle" font-weight="bold" fill="#1a1d29">Агент</text>
+      <circle cx="500" cy="120" r="18" fill="#c96f4a"/><circle cx="595" cy="120" r="18" fill="#c96f4a"/><circle cx="690" cy="120" r="18" fill="#c96f4a"/>
+      <path d="M 518 120 C 545 100, 565 100, 577 120" stroke="#c96f4a" stroke-width="3" fill="none"/>
+      <path d="M 613 100 C 640 120, 660 140, 685 125" stroke="#c96f4a" stroke-width="3" fill="none"/>
+      <path d="M 685 112 C 655 90, 620 95, 610 108" stroke="#c96f4a" stroke-width="3" fill="none"/>
+      <text x="595" y="170" text-anchor="middle" font-size="15" fill="#6b6f7d" font-family="Arial">сам решает следующие шаги по инструментам</text>
+    </g>
+  </svg>
+  <p>Workflow: LLM выбирает один из заранее определённых переходов, сетка зашита в код. Агент: LLM выходит за пределы готового набора и сам определяет путь. Чем свободнее агент - тем дороже отладка.</p>
+</section>
+
+<!-- ============ WHY CHAINS BREAK ============ -->
+<div class="question">Почему линейной цепочке становится тесно</div>
+<section>
+  <svg viewBox="0 0 780 200">
+    <defs><marker id="b" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4a7fb5"/></marker></defs>
+    <g font-family="Georgia" font-size="17">
+      <rect x="30" y="70" width="140" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="100" y="103" text-anchor="middle">персона</text>
+      <line x1="172" y1="98" x2="200" y2="98" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="205" y="70" width="140" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="275" y="103" text-anchor="middle">запросы</text>
+      <line x1="347" y1="98" x2="375" y2="98" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="380" y="70" width="140" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="450" y="103" text-anchor="middle">поиск</text>
+      <line x1="522" y1="98" x2="550" y2="98" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="555" y="70" width="140" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="625" y="103" text-anchor="middle">саммари</text>
+      <!-- crossed out back edge -->
+      <path d="M 625 70 C 625 25, 275 25, 275 65" stroke="#c96f4a" stroke-width="3" stroke-dasharray="7 5" fill="none"/>
+      <line x1="430" y1="18" x2="470" y2="48" stroke="#c96f4a" stroke-width="5"/>
+      <line x1="470" y1="18" x2="430" y2="48" stroke="#c96f4a" stroke-width="5"/>
+      <text x="450" y="15" text-anchor="middle" font-size="14" fill="#c96f4a" font-family="Arial">цепочка так не умеет</text>
+    </g>
+  </svg>
+  <p>Четыре сценария, где <code>prompt | llm | parser</code> ломается: ветвление по данным, повтор шагов по новой информации, явный контроль состояния, параллельные процессы. LangGraph закрывает их тремя механизмами: состояние, условное ветвление, циклы.</p>
+</section>
+
+<!-- ============ STATE + NODES ============ -->
+<div class="question">Три слова, на которых стоит весь LangGraph</div>
+<section>
+  <span class="tag" style="color:var(--blue);border-color:var(--blue);">State · Узлы · Рёбра</span>
+<pre><span class="c"># состояние: типизированный контракт между узлами</span>
+<span class="k">class</span> ResearchState(TypedDict):
+    user_question: str
+    search_queries: Optional[List[SearchQuery]]
+    search_results: Optional[List[SearchResult]]
+    research_summary: Optional[str]
+
+<span class="c"># узел: принимает состояние, возвращает ЧАСТИЧНОЕ обновление</span>
+<span class="k">def</span> process_node(state: dict) -> dict:
+    <span class="k">return</span> {"output_data": do_something(state["input_data"])}
+
+<span class="c"># условное ребро: роутер по состоянию выбирает следующий узел</span>
+<span class="k">def</span> should_refine(state) -> str:
+    <span class="k">if</span> len(state["search_results"]) < 2:
+        <span class="k">return</span> "refine_queries"
+    <span class="k">return</span> "summarize_results"</pre>
+  <p>Узел не подменяет состояние целиком - возвращает только изменённые поля, они мержатся. Роутер возвращает строку с именем следующего узла.</p>
+</section>
+
+<!-- ============ THE GRAPH ============ -->
+<div class="question">Research-агент из главы 4 становится графом</div>
+<section>
+  <svg viewBox="0 0 780 320">
+    <defs><marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4a7fb5"/></marker>
+    <marker id="gr" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#c96f4a"/></marker>
+    <marker id="gg" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5aa17f"/></marker></defs>
+    <g font-family="Georgia" font-size="16">
+      <rect x="30" y="40" width="160" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="110" y="74" text-anchor="middle">Выбор персоны</text>
+      <line x1="192" y1="68" x2="225" y2="68" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#g)"/>
+      <rect x="230" y="40" width="170" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="315" y="74" text-anchor="middle">Генерация запросов</text>
+      <line x1="317" y1="98" x2="317" y2="130" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#g)"/>
+      <rect x="230" y="135" width="170" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="315" y="169" text-anchor="middle">Веб-поиск</text>
+      <line x1="317" y1="193" x2="317" y2="225" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#g)"/>
+      <rect x="230" y="230" width="170" height="56" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="315" y="264" text-anchor="middle">Саммаризация</text>
+      <line x1="402" y1="258" x2="440" y2="258" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#g)"/>
+      <rect x="445" y="230" width="185" height="56" rx="12" fill="#f9ede7" stroke="#c96f4a" stroke-width="2.5"/><text x="537" y="258" text-anchor="middle">Оценка релевантности</text>
+      <text x="537" y="276" text-anchor="middle" font-size="13" fill="#6b6f7d" font-family="Arial">итог заходит меньше, чем на 50%?</text>
+      <!-- back edge -->
+      <path d="M 445 250 C 380 170, 380 120, 330 100" stroke="#c96f4a" stroke-width="3" stroke-dasharray="7 5" fill="none" marker-end="url(#gr)"/>
+      <text x="425" y="150" text-anchor="middle" font-size="14" fill="#c96f4a" font-family="Arial">да: regenerate queries</text>
+      <!-- forward -->
+      <line x1="632" y1="258" x2="665" y2="258" stroke="#5aa17f" stroke-width="2.5" marker-end="url(#gg)"/>
+      <rect x="670" y="230" width="95" height="56" rx="12" fill="#eef6f1" stroke="#5aa17f" stroke-width="2.5"/><text x="717" y="264" text-anchor="middle">Отчёт</text>
+      <text x="700" y="222" text-anchor="middle" font-size="14" fill="#5aa17f" font-family="Arial">нет</text>
+    </g>
+  </svg>
+  <p>Шесть узлов вместо пяти шагов. Новый - Оценка релевантности: если качественных саммари меньше половины, поток возвращается на генерацию запросов. На цепочках такой цикл реализуется крайне неуклюже.</p>
+  <p class="why">Лимит в три итерации: при исчерпании отчёт всё равно собирается из имеющегося. Деградация вместо отказа - инженерно зрелое решение.</p>
+</section>
+
+<!-- ============ ROUTER BUG ============ -->
+<div class="question">Ловушка в коде самой книги</div>
+<section>
+<pre><span class="c"># так в книге - и это НЕ работает:</span>
+<span class="k">def</span> route_based_on_relevance(state):
+    state["iteration_count"] += 1   <span class="c"># мутация в роутере!</span>
+    <span class="k">if</span> state["iteration_count"] >= 3:
+        <span class="k">return</span> "write_research_report"
+    ...</pre>
+  <p>Счётчик инкрементируется мутацией словаря прямо в условном ребре. Но книга же сама говорит: узлы возвращают частичное обновление, а не мутируют состояние. Если движок передаёт копию словаря - счётчик в графе не изменится, и защитный лимит не сработает: вечный цикл.</p>
+  <div class="verdict">Правильно: счётчик живёт в состоянии и обновляется в узле, либо роутер возвращает пару (маршрут, обновление). Место, где граф обещает воспроизводимость, - именно там авторский код её ломает.</div>
+</section>
+
+<!-- ============ WHAT YOU GAIN ============ -->
+<div class="question">Что даёт переход на граф</div>
+<section>
+  <p style="font-size:22px;">Все шесть выигрышей из 5.5.4 растут из одного корня: <b>явное состояние делает систему наблюдаемой</b>. Прозрачная обработка, модульность, видимый порядок исполнения, локализация узкого места, точечные ошибки, дешёвое расширение.</p>
+  <p style="margin-top:16px;">И слабо раскрытый бонус: граф хранит историю исполнения. Инспекция траектории рассуждения, повтор из чекпоинта, ветвление от прежних решений. В линейной цепочке этого нет без ручной работы.</p>
+</section>
+
+<!-- ============ FINAL ============ -->
+<div class="final">
+  <h2>Критерий выбора</h2>
+  <p>Переходить на граф стоит там, где линейной цепочке не хватает трёх вещей: <b>явного состояния</b>, <b>ветвления по результату</b> и <b>цикла</b>. Минимальный словарь невелик: TypedDict, StateGraph, add_node, add_edge, add_conditional_edges, set_entry_point, END, compile.</p>
+  <p style="margin-top:12px;">Остальное - чекпоинты и мультиагентность - книга выносит в следующие части.</p>
+</div>
+
+<footer>AI Agents and Applications · Roberto Infante, Manning 2026 · глава 5 · разбор в llm-wiki</footer>
+</body>
+</html>
