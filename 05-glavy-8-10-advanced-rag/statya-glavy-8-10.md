@@ -65,7 +65,7 @@ def detect_compound(query: str, dcd: dict | None = None) -> list[dict]:
     return subqueries
 ```
 
-*Вопрос "миграция ALD Pro на MS AD" содержит слова обоих словарей - получает два под-запроса: по коллекции продуктов и по коллекции развёртывания. Полный файл: [compound.py в материалах выпуска](https://github.com/NikolayGusev-astra/ai-agents-book-series/tree/main/05-glavy-8-10-advanced-rag/materials). Роутинг по типу вопроса мы разбирали отдельно: [Домашний Perplexity, часть 2: кто думает](https://hermes-agent.ru/news/domashnij-perplexity-chast-2-kto-dumaet/).*
+*Вопрос "миграция ALD Pro на MS AD" содержит слова обоих словарей - получает два под-запроса: по коллекции продуктов и по коллекции развёртывания.* Полный файл: [compound.py в материалах выпуска](https://github.com/NikolayGusev-astra/ai-agents-book-series/tree/main/05-glavy-8-10-advanced-rag/materials). Роутинг по типу вопроса мы разбирали отдельно: [Домашний Perplexity, часть 2: кто думает](https://hermes-agent.ru/news/domashnij-perplexity-chast-2-kto-dumaet/).
 
 # Глава 10. Куда идёт поиск
 
@@ -75,7 +75,9 @@ Self-querying: вопрос разделяется на семантическу
 
 Text-to-SQL: главная находка из цитируемой статьи Rajkumar и коллег - галлюцинации в SQL это в первую очередь выдуманные имена таблиц и колонок, и они резко падают, если в промпт класть CREATE TABLE плюс примеры строк. Отдельно чистка: модель заворачивает SQL в markdown-обвязку, и исполнитель падает на тройных кавычках перед SELECT.
 
-*"Заметки на полях". Наш роутер dcd_router тоже детерминированный: 15 доменов словарём ключевых слов с весами и anti-keywords (слова, которые наоборот уводят из домена). Цена вопроса - микросекунды вместо вызова LLM. Полный файл: [dcd_router.py в материалах выпуска](https://github.com/NikolayGusev-astra/ai-agents-book-series/tree/main/05-glavy-8-10-advanced-rag/materials). LLM-классификатор из книги хорош там, где домены нельзя выразить словарём; у нас домены известны заранее, и словарь дешевле, предсказуемее и тестируем.*
+*"Заметки на полях". Наш роутер dcd_router тоже детерминированный: 15 доменов словарём ключевых слов с весами и anti-keywords (слова, которые наоборот уводят из домена). Цена вопроса - микросекунды вместо вызова LLM. *Полный файл - dcd_router.py в материалах выпуска (ссылка следом). LLM-классификатор из книги хорош там, где домены нельзя выразить словарём; у нас домены известны заранее, и словарь дешевле, предсказуемее и тестируем.*
+
+Файл: [dcd_router.py в материалах выпуска](https://github.com/NikolayGusev-astra/ai-agents-book-series/tree/main/05-glavy-8-10-advanced-rag/materials).
 
 # Глава 10. Что выходит из поиска
 
@@ -122,7 +124,11 @@ def deduplicate_evidence(evidence: Iterable[Evidence]) -> list[Evidence]:
     return deduplicated
 ```
 
-*Дальше rerank локальным кросс-энкодером ms-marco-MiniLM (~80МБ, на CPU, без round-trip в LM Studio) и бусты за точное совпадение идентификаторов: если запрос это номер документа или slug - такой документ поднимается фиксированной добавкой к скору. Оба файла в материалах выпуска: [rerank_adapter.py](https://github.com/NikolayGusev-astra/ai-agents-book-series/blob/main/05-glavy-8-10-advanced-rag/materials/rerank_adapter.py), [boosting.py](https://github.com/NikolayGusev-astra/ai-agents-book-series/blob/main/05-glavy-8-10-advanced-rag/materials/boosting.py). Почему порог схожести и "больше контекста" не работают сами по себе: [Больше контекста - хуже результат](https://hermes-agent.ru/news/bolshe-konteksta-huzhe-rezultat-pochemu-ai/).*
+*Дальше rerank локальным кросс-энкодером ms-marco-MiniLM (около 80МБ, на CPU, без round-trip в LM Studio) и бусты за точное совпадение идентификаторов: если запрос это номер документа или slug - такой документ поднимается фиксированной добавкой к скору. Оба файла лежат в материалах выпуска, ссылки следом. Почему порог схожести и "больше контекста" не работают сами по себе - отдельная статья, ссылка следом.*
+
+Статья: [Больше контекста - хуже результат](https://hermes-agent.ru/news/bolshe-konteksta-huzhe-rezultat-pochemu-ai/).
+
+Файлы: [rerank_adapter.py](https://github.com/NikolayGusev-astra/ai-agents-book-series/blob/main/05-glavy-8-10-advanced-rag/materials/rerank_adapter.py), [boosting.py](https://github.com/NikolayGusev-astra/ai-agents-book-series/blob/main/05-glavy-8-10-advanced-rag/materials/boosting.py).
 
 # Чего нет в книге ни разу
 
@@ -130,7 +136,9 @@ def deduplicate_evidence(evidence: Iterable[Evidence]) -> list[Evidence]:
 
 У нас оценка двухслойная: детерминированный слой без модели и слой LLM-судьи поверх. Приём внедряется, только если метрика на золотом наборе выросла.
 
-*"Заметки на полях". Методологию "RAG от простого к сложному" и типовые ловушки мы разбирали отдельно: [RAG от простого к сложному](https://hermes-agent.ru/news/rag-ot-prostogo-k-slozhnomu-kak/), [Что не пишут в "RAG за 5 минут"](https://hermes-agent.ru/news/chto-ne-pishut-rag-za-5-minut/), [Что не пишут в "RAG за 5 минут", часть 2](https://hermes-agent.ru/news/chto-ne-pishut-rag-za-5-minut-chast-2/).*
+*"Заметки на полях". Методологию "RAG от простого к сложному" и типовые ловушки мы разбирали в трёх статьях, ссылки следом.*
+
+Статьи: [RAG от простого к сложному](https://hermes-agent.ru/news/rag-ot-prostogo-k-slozhnomu-kak/), [Что не пишут в "RAG за 5 минут"](https://hermes-agent.ru/news/chto-ne-pishut-rag-za-5-minut/), [Что не пишут в "RAG за 5 минут", часть 2](https://hermes-agent.ru/news/chto-ne-pishut-rag-za-5-minut-chast-2/).
 
 # Что забрать в работу
 
