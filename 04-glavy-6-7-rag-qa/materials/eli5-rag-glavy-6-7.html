@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG в глубину: главы 6-7</title>
+<style>
+  :root{
+    --ink:#1a1d29;
+    --paper:#f7f5ef;
+    --blue:#4a7fb5;
+    --red:#c96f4a;
+    --green:#5aa17f;
+    --muted:#6b6f7d;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;
+    max-width:860px;
+    margin:0 auto;
+    padding:60px 32px 100px;
+    line-height:1.5;
+  }
+  h1{font-size:46px;line-height:1.15;margin-bottom:14px;}
+  .sub{font-size:22px;color:var(--muted);margin-bottom:50px;}
+  .question{font-size:27px;margin:60px 0 40px;border-left:6px solid var(--ink);padding-left:22px;}
+  section{margin-bottom:80px;}
+  .tag{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border:2px solid;margin-bottom:16px;}
+  svg{display:block;width:100%;height:auto;margin:20px 0 16px;}
+  p{font-size:21px;max-width:660px;}
+  .why{font-size:19px;color:var(--muted);margin-top:12px;font-style:italic;}
+  table{border-collapse:collapse;font-size:19px;max-width:700px;width:100%;}
+  th,td{border:2px solid #d8d4c8;padding:10px 14px;text-align:left;}
+  th{background:#eef1f6;}
+  .num{font-family:Consolas,monospace;}
+  .verdict{font-size:23px;margin-top:36px;padding:24px 26px;background:#fff;border:3px solid var(--red);border-radius:16px;max-width:720px;}
+  .good{font-size:23px;margin-top:36px;padding:24px 26px;background:#fff;border:3px solid var(--green);border-radius:16px;max-width:720px;}
+  .final{margin-top:80px;padding:38px 34px;background:var(--ink);color:var(--paper);border-radius:18px;}
+  .final h2{font-size:32px;margin-bottom:14px;}
+  .final p{font-size:21px;color:#d9d6cc;}
+  .final b{color:#fff;}
+  footer{margin-top:70px;font-size:16px;color:var(--muted);font-family:Arial,sans-serif;}
+</style>
+</head>
+<body>
+
+<h1>RAG в глубину: две стадии и одна ловушка</h1>
+<p class="sub">Главы 6-7 книги «AI Agents and Applications»: векторные хранилища, ChromaDB, память диалога и отладка трейсов</p>
+
+<div class="question">Автор открывает главу не кодом, а галлюцинацией: <b>94 колонны</b>, посчитанные по трём храмам. У храма Hera I их 50.</div>
+
+<!-- ============ TWO STAGES ============ -->
+<section>
+  <span class="tag" style="color:var(--blue);border-color:var(--blue);">Архитектура: две стадии</span>
+  <svg viewBox="0 0 780 300">
+    <defs><marker id="b" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4a7fb5"/></marker></defs>
+    <g font-family="Georgia" font-size="16">
+      <text x="30" y="25" font-size="15" font-weight="bold" fill="#6b6f7d" font-family="Arial">СТАДИЯ 1 · ИНГЕСТИЯ (один раз)</text>
+      <rect x="30" y="40" width="130" height="52" rx="10" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="95" y="71" text-anchor="middle">источники</text>
+      <line x1="162" y1="66" x2="188" y2="66" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="193" y="40" width="130" height="52" rx="10" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="258" y="71" text-anchor="middle">чанки</text>
+      <line x1="325" y1="66" x2="351" y2="66" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="356" y="40" width="140" height="52" rx="10" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="426" y="71" text-anchor="middle">эмбеддинги</text>
+      <line x1="498" y1="66" x2="524" y2="66" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="529" y="40" width="220" height="52" rx="10" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/><text x="639" y="71" text-anchor="middle">векторная БД + текст + метаданные</text>
+      <text x="30" y="160" font-size="15" font-weight="bold" fill="#6b6f7d" font-family="Arial">СТАДИЯ 2 · ЗАПРОС (каждый вопрос)</text>
+      <rect x="30" y="175" width="150" height="52" rx="10" fill="#fff" stroke="#1a1d29" stroke-width="2.5"/><text x="105" y="206" text-anchor="middle">вопрос</text>
+      <line x1="182" y1="201" x2="208" y2="201" stroke="#1a1d29" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="213" y="175" width="170" height="52" rx="10" fill="#fff" stroke="#1a1d29" stroke-width="2.5"/><text x="298" y="206" text-anchor="middle">поиск top-k чанков</text>
+      <line x1="385" y1="201" x2="411" y2="201" stroke="#1a1d29" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="416" y="175" width="150" height="52" rx="10" fill="#fff" stroke="#1a1d29" stroke-width="2.5"/><text x="491" y="206" text-anchor="middle">промпт + контекст</text>
+      <line x1="568" y1="201" x2="594" y2="201" stroke="#1a1d29" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="599" y="175" width="150" height="52" rx="10" fill="#eef6f1" stroke="#5aa17f" stroke-width="2.5"/><text x="674" y="206" text-anchor="middle">LLM синтезирует</text>
+      <!-- divider -->
+      <line x1="660" y1="100" x2="660" y2="168" stroke="#1a1d29" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#b)"/>
+    </g>
+  </svg>
+  <p>Ключевое разделение ролей, которое размывают половина обзоров: векторная БД <b>не генерирует ответ</b> - она возвращает ближайшие чанки. Платная LLM вызывается только на синтез. Поиск бесплатный.</p>
+</section>
+
+<!-- ============ HALLUCINATION ============ -->
+<div class="question">Галлюцинация на проверяемом факте, а не декларация</div>
+<section>
+  <p>Автор загружает статью Britannica о Паестуме в ChatGPT и спрашивает про колонны. Модель уверенно выдаёт 94 (32+30+32). Реально у Hera I - 50. Плюс модель ответила про объект ЮНЕСКО, которого в тексте не было: LLM подмешивает собственные знания и не различает «сказано в контексте» и «я знаю извне».</p>
+  <table>
+    <tr><th>Промпт</th><th>Модель</th><th>Ответ</th></tr>
+    <tr><td>наивный «прочитай и ответь»</td><td class="num">GPT-5-nano</td><td>честно: числа в тексте нет</td></tr>
+    <tr><td>наивный «прочитай и ответь»</td><td class="num">GPT-3.5-turbo</td><td><b>выдуманные 24 колонны</b> с разбивкой</td></tr>
+    <tr><td>защитный промпт + антипример</td><td class="num">GPT-3.5-turbo</td><td>ровно «I do not know»</td></tr>
+  </table>
+  <p style="margin-top:18px;">Самая полезная деталь промпта: запрет в абстрактном виде («не выдумывай») модель игнорирует, а запрет с <b>ложным примером</b> («не говори, что храмов три, а колонн три») работает.</p>
+</section>
+
+<!-- ============ VECTOR STORES ============ -->
+<div class="question">От библиотек к БД: почему это важно</div>
+<section>
+  <span class="tag" style="color:var(--blue);border-color:var(--blue);">Эволюция хранилищ</span>
+  <svg viewBox="0 0 780 210">
+    <g font-family="Georgia" font-size="16">
+      <rect x="25" y="40" width="225" height="130" rx="12" fill="#f4f2ec" stroke="#9a9a9a" stroke-width="2"/>
+      <text x="137" y="68" text-anchor="middle" font-weight="bold" fill="#1a1d29">Библиотеки (FAISS)</text>
+      <text x="137" y="96" text-anchor="middle" font-size="14" fill="#6b6f7d" font-family="Arial">всё в памяти,</text>
+      <text x="137" y="116" text-anchor="middle" font-size="14" fill="#6b6f7d" font-family="Arial">неизменяемо, текст хранить</text>
+      <text x="137" y="136" text-anchor="middle" font-size="14" fill="#6b6f7d" font-family="Arial">отдельно, поиск во время</text>
+      <text x="137" y="156" text-anchor="middle" font-size="14" fill="#6b6f7d" font-family="Arial">загрузки - нельзя</text>
+      <line x1="258" y1="105" x2="298" y2="105" stroke="#1a1d29" stroke-width="3" marker-end="url(#b)"/>
+      <rect x="303" y="40" width="225" height="130" rx="12" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2.5"/>
+      <text x="415" y="68" text-anchor="middle" font-weight="bold" fill="#1a1d29">Векторные БД (Chroma)</text>
+      <text x="415" y="96" text-anchor="middle" font-size="14" fill="#41547a" font-family="Arial">текст + эмбеддинг + метаданные</text>
+      <text x="415" y="116" text-anchor="middle" font-size="14" fill="#41547a" font-family="Arial">в одной записи, полный CRUD,</text>
+      <text x="415" y="136" text-anchor="middle" font-size="14" fill="#41547a" font-family="Arial">поиск во время импорта,</text>
+      <text x="415" y="156" text-anchor="middle" font-size="14" fill="#41547a" font-family="Arial">кэш, шардинг</text>
+      <line x1="536" y1="105" x2="576" y2="105" stroke="#1a1d29" stroke-width="3" marker-end="url(#b)"/>
+      <rect x="581" y="40" width="174" height="130" rx="12" fill="#eef6f1" stroke="#5aa17f" stroke-width="2.5"/>
+      <text x="668" y="68" text-anchor="middle" font-weight="bold" fill="#1a1d29">Расширения</text>
+      <text x="668" y="96" text-anchor="middle" font-size="14" fill="#3d6650" font-family="Arial">pgvector в PostgreSQL,</text>
+      <text x="668" y="116" text-anchor="middle" font-size="14" fill="#3d6650" font-family="Arial">MongoDB Atlas:</text>
+      <text x="668" y="136" text-anchor="middle" font-size="14" fill="#3d6650" font-family="Arial">векторы в тех же</text>
+      <text x="668" y="156" text-anchor="middle" font-size="14" fill="#3d6650" font-family="Arial">записях, что и данные</text>
+    </g>
+  </svg>
+  <p>Ловушка Chroma: если не указать модель эмбеддингов явно - она считает их своей дефолтной. Смена модели означает переэмбеддинг всего корпуса: размерность должна совпадать между ингестией и поиском.</p>
+</section>
+
+<!-- ============ DIAGNOSTICS ============ -->
+<div class="question">Distances - дешёвая диагностика чанкинга</div>
+<section>
+  <table>
+    <tr><th>Чанк</th><th>Про что</th><th>Distance</th></tr>
+    <tr><td class="num">paestum-br-03</td><td>про три дорических храма ✓</td><td><b>0.766</b></td></tr>
+    <tr><td class="num">paestum-br-01</td><td>общее описание</td><td>0.895</td></tr>
+    <tr><td class="num">paestum-br-02</td><td>список музея ✗</td><td>1.336</td></tr>
+  </table>
+  <p style="margin-top:18px;">Правильный чанк первый, разрыв до худшего почти двукратный. Правило: если релевантные чанки стоят рядом по distance - индексация хорошая; разброс большой - проблема в нарезке, а не в промпте.</p>
+</section>
+
+<!-- ============ MEMORY ============ -->
+<div class="question">Злое «And then, what they do?»</div>
+<section>
+  <p>Follow-up «что они тогда делали?» на stateless-боте улетает в сирен из «Одиссеи»: без истории в промпте у запроса нет антецедента для «they». Это не баг модели, а архитектурный пробел.</p>
+  <p style="margin-top:14px;">Решение - три роли: Context (текст из векторной БД) и Chat History добавляются в промпт, история копится через ChatMessageHistory. Контекст кладётся под роль <b>assistant</b>: так извлечённый текст выглядит как уже сказанное в диалоге, а не как инструкция пользователя. Цена вопроса растёт: 1951 prompt-токен на первом ответе и дальше по нарастающей. Отсюда вывод книги: скользящее окно или сжатие истории в саммари для длинных диалогов.</p>
+</section>
+
+<!-- ============ LANGSMITH ============ -->
+<div class="question">Отладка: разрез по ранам</div>
+<section>
+  <svg viewBox="0 0 780 190">
+    <g font-family="Arial" font-size="15">
+      <rect x="25" y="30" width="220" height="130" rx="12" fill="#fff" stroke="#1a1d29" stroke-width="2"/>
+      <text x="135" y="58" text-anchor="middle" font-weight="bold" font-family="Georgia" fill="#1a1d29">Трейсы проекта</text>
+      <rect x="45" y="75" width="180" height="16" rx="4" fill="#eef1f6"/><rect x="45" y="99" width="180" height="16" rx="4" fill="#eef1f6"/><rect x="45" y="123" width="180" height="16" rx="4" fill="#eaf1f8"/>
+      <rect x="275" y="30" width="220" height="130" rx="12" fill="#fff" stroke="#1a1d29" stroke-width="2"/>
+      <text x="385" y="58" text-anchor="middle" font-weight="bold" font-family="Georgia" fill="#1a1d29">Граф ранов</text>
+      <rect x="300" y="80" width="80" height="40" rx="8" fill="#eaf1f8" stroke="#4a7fb5" stroke-width="2"/><text x="340" y="105" text-anchor="middle" font-size="13">Retriever</text>
+      <line x1="382" y1="100" x2="405" y2="100" stroke="#4a7fb5" stroke-width="2.5" marker-end="url(#b)"/>
+      <rect x="410" y="80" width="70" height="40" rx="8" fill="#eef6f1" stroke="#5aa17f" stroke-width="2"/><text x="445" y="105" text-size="13" text-anchor="middle" font-size="13">LLM</text>
+      <rect x="525" y="30" width="230" height="130" rx="12" fill="#fff" stroke="#1a1d29" stroke-width="2"/>
+      <text x="640" y="58" text-anchor="middle" font-weight="bold" font-family="Georgia" fill="#1a1d29">Вход / выход рана</text>
+      <text x="640" y="90" text-anchor="middle" font-size="13" fill="#6b6f7d" font-family="Arial">вход: запрос</text>
+      <text x="640" y="112" text-anchor="middle" font-size="13" fill="#6b6f7d" font-family="Arial">выход: конкретные чанки</text>
+      <text x="640" y="140" text-anchor="middle" font-size="14" fill="#c96f4a" font-family="Arial">нет нужного чанка =</text>
+      <text x="640" y="152" text-anchor="middle" font-size="14" fill="#c96f4a" font-family="Arial">чинить индексацию, не промпт</text>
+    </g>
+  </svg>
+  <p>Трёхпанельный дашборд LangSmith: трейсы слева, граф ранов в центре с длительностями, вход/выход справа. Клик по рану ретривера показывает, какие документы вернул поиск. Если нужного документа в выходе ретривера нет - чинить промпт бессмысленно, проблема в индексации.</p>
+</section>
+
+<!-- ============ FINAL ============ -->
+<div class="final">
+  <h2>Единственная мысль двух глав</h2>
+  <p>Качество RAG определяется <b>качеством чанков и релевантностью выдачи</b>, а не формулировкой промпта. Соблазн чинить плохие ответы промптом при плохом поиске - главная ловушка. Разрез по ранам в LangSmith существует именно для того, чтобы её обойти.</p>
+</div>
+
+<footer>AI Agents and Applications · Roberto Infante, Manning 2026 · главы 6-7 · разбор в llm-wiki</footer>
+</body>
+</html>
