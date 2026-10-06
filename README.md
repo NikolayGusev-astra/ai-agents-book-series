@@ -24,4 +24,4 @@
 
 | Глава | Статья | Черновик |
 |---|---|---|
-| 1 | [Книжка в самолёт: глава 1](https://telegra.ph/Knizhka-v-samolyot-glava-1-CHERNOVIK-dlya-vychitki-v2-10-06) | на вычитке |
+| 1 | [Книжка в самолёт: глава 1](https://telegra.ph/Knizhka-v-samolyot-glava-1-CHERNOVIK-dlya-vychitki-v5-10-06) | на вычитке, v5: заметки на полях + ссылки на наши статьи |
