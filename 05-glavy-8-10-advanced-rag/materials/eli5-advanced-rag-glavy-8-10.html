@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Продвинутый RAG: четыре места вмешательства</title>
+<style>
+body{font-family:var(--font-sans,system-ui);color:var(--foreground);margin:0;padding:8px 4px;font-size:15px;line-height:1.5}
+.wrap{max-width:960px}
+svg{width:100%;height:auto;display:block}
+.box{fill:var(--card);stroke:var(--border);stroke-width:1.5;rx:8}
+.box-hl{fill:none;stroke:var(--accent);stroke-width:2.5;rx:8}
+.t-main{font-size:15px;font-weight:700;fill:var(--foreground)}
+.t-sub{font-size:12px;fill:var(--muted-foreground)}
+.t-tech{font-size:11px;fill:var(--foreground);opacity:.85}
+.t-hl{font-size:13px;font-weight:700;fill:var(--accent)}
+.arrow{stroke:var(--muted-foreground);stroke-width:1.8;fill:none;marker-end:url(#ah)}
+.legend{font-size:11.5px;fill:var(--muted-foreground)}
+.tag{font-size:10.5px;fill:var(--accent);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="ah" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<polygon points="0 0, 9 3.5, 0 7" fill="var(--muted-foreground)"/>
+</marker>
+</defs>
+
+<!-- ВЕРХ: приём главы 9 - что входит -->
+<rect x="60" y="18" width="840" height="92" class="box"/>
+<text x="80" y="44" class="t-main">ГЛАВА 9 — что входит в поиск (трансформация вопроса)</text>
+<text x="80" y="66" class="t-tech">rewrite (перепиши вопрос) · multi-query (раздели на 5) · step-back (обобщи) · HyDE (сгенерируй ответ-документ) · декомпозиция (зависимые шаги)</text>
+<text x="80" y="88" class="t-sub">наш аналог: compound.py — детекция составного запроса словарём доменов, без LLM-вызова</text>
+<line x1="150" y1="110" x2="150" y2="146" class="arrow"/>
+
+<!-- ЦЕНТР: ретривер -->
+<rect x="330" y="150" width="300" height="70" class="box box-hl"/>
+<text x="480" y="180" text-anchor="middle" class="t-main">RETRIEVER + векторная БД</text>
+<text x="480" y="202" text-anchor="middle" class="t-sub">единый интерфейс — не меняется ни в одной главе</text>
+
+<!-- ЛЕВО: глава 8 - что лежит в индексе -->
+<rect x="60" y="262" width="840" height="92" class="box"/>
+<text x="80" y="288" class="t-main">ГЛАВА 8 — что лежит в индексе (двухслойность)</text>
+<text x="80" y="310" class="t-tech">родитель-ребёнок (3000/500) · саммари в индекс, оригинал в docstore · гипотетические вопросы (мост через vocabulary mismatch) · соседи чанка</text>
+<text x="80" y="332" class="t-sub">наш аналог: book2rag — чанкинг по структуре markdown-заголовков + метаданные в каждом чанке; memvid — проекция в видеофайл</text>
+<line x1="330" y1="228" x2="330" y2="258" class="arrow"/>
+
+<!-- ПРАВО: глава 10а - куда идёт поиск -->
+<rect x="60" y="396" width="405" height="88" class="box"/>
+<text x="80" y="422" class="t-main">ГЛАВА 10 — куда идёт поиск</text>
+<text x="80" y="444" class="t-tech">роутинг (vector / SQL / graph) · self-querying (вопрос → фильтр+семантика) · text-to-SQL (CREATE TABLE в промпт)</text>
+<text x="80" y="466" class="t-sub">наш аналог: dcd_router.py — 15 доменов словарём с весами, микросекунды вместо вызова LLM</text>
+
+<!-- ПРАВО: глава 10б - что выходит -->
+<rect x="495" y="396" width="405" height="88" class="box"/>
+<text x="515" y="422" class="t-main">ГЛАВА 10 — что выходит из поиска</text>
+<text x="515" y="444" class="t-tech">порог по схожести · RRF-слияние рангов · дедупликация · rerank кросс-энкодером</text>
+<text x="515" y="466" class="t-sub">наш аналог: gateway deduplication + rerank_adapter (MiniLM 80МБ) + boosting за идентификаторы</text>
+
+<line x1="480" y1="222" x2="262" y2="392" class="arrow"/>
+<line x1="480" y1="222" x2="698" y2="392" class="arrow"/>
+
+<!-- ЛЕГЕНДА ВНИЗУ -->
+<rect x="60" y="500" width="840" height="44" class="box"/>
+<text x="80" y="518" class="t-hl">Чего нет в книге ни разу:</text>
+<text x="290" y="518" class="t-tech">ни одного числа. «Выдача стала разнообразнее» — вся метрика трёх глав</text>
+<text x="80" y="536" class="t-tech">наш ответ: eval_golden.py — два слоя оценки (детерминированный + LLM-судья). Приём без замера на golden set не внедряется</text>
+</svg>
+</div>
+</body>
+</html>
