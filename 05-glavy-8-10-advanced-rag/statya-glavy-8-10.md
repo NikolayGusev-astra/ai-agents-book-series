@@ -55,8 +55,8 @@ def detect_compound(query: str, dcd: dict | None = None) -> list[dict]:
         return []
     subqueries = []
     if has_product:
-        subqueries.append({"query": query, "domain": "rusbitech",
-                           "collection": "rusbitech-products"})
+        subqueries.append({"query": query, "domain": "astra-products",
+                           "collection": "astra-products"})
     if has_infra:
         infra_terms = [w for w in _COMPOUND_INFRA_WORDS if w in ql]
         infra_query = f"{query} {' '.join(infra_terms[:3])}" if infra_terms else query
