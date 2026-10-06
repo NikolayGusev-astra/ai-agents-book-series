@@ -25,4 +25,4 @@
 | Глава | Статья | Черновик |
 |---|---|---|
 | 1 | [Книжка в самолёт: глава 1](https://telegra.ph/Knizhka-v-samolyot-glava-1-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), канал msg 332 |
-| 2 (главы 3-4 книги) | [Суммаризация: MapReduce против Refine](https://telegra.ph/Summarizaciya-MapReduce-protiv-Refine-CHERNOVIK-dlya-vychitki-10-06) | черновик на вычитке |
+| 2 (главы 3-4 книги) | [Суммаризация: MapReduce против Refine](https://telegra.ph/Summarizaciya-MapReduce-protiv-Refine-na-zhivom-zamere-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/summa-mr-vs-refine/), канал msg 333, [скрипты воспроизведения](02-chasti-3-4-summarizaciya/README.md) |
