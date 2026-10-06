@@ -10,7 +10,7 @@
 01-glavy-1-2-fundament-i-prompty/    Главы 1-2: три класса LLM-систем, RAG, промпты
   statya-glava-1.md                  Текст статьи (источник истины)
   materials/                         Схемы и артефакты
-02-chasti-3-4-summarizaciya/         Главы 3-4: суммаризация длинных документов (план)
+02-chasti-3-4-summarizaciya/         Главы 3-4: суммаризация, MapReduce vs Refine, живой замер
 ...
 ```
 
@@ -25,3 +25,4 @@
 | Глава | Статья | Черновик |
 |---|---|---|
 | 1 | [Книжка в самолёт: глава 1](https://telegra.ph/Knizhka-v-samolyot-glava-1-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), канал msg 332 |
+| 2 (главы 3-4 книги) | Суммаризация: MapReduce против Refine на живом замере | текст готов, черновик не публиковался |
