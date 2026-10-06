@@ -4,7 +4,7 @@
 
 # Третья часть цикла: цепочке нужна память
 
-Третья часть цикла по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Главы 1-2 разбирали фундамент, главы 3-4 - суммаризацию. Теперь глава 5 книги: LangGraph, и главный вопрос - когда линейной цепочке перестаёт хватать.
+Третья часть цикла по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Главы 1-2 разбирали [фундамент](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), главы 3-4 - [суммаризацию с живым замером](https://hermes-agent.ru/news/summa-mr-vs-refine/). Теперь глава 5 книги: LangGraph, и главный вопрос - когда линейной цепочке перестаёт хватать.
 
 Серия выходит раз в 1-2 дня, пометки: #AI_Agents_and_Applications #глава_3.
 
