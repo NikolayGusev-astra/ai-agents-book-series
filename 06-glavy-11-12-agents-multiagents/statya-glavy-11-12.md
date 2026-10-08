@@ -4,8 +4,6 @@
 
 Шестая часть цикла по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Главы 11-12: tool-based агенты и мультиагентные системы. Предыдущие части: [фундамент и промпты](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), [суммаризация с живым замером](https://hermes-agent.ru/news/summa-mr-vs-refine/), [LangGraph](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), [RAG в глубину](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), [продвинутый RAG](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/).
 
-Серия выходит раз в 1-2 дня, пометки: #AI_Agents_and_Applications #глава_6.
-
 # Что меняется, когда цепочка становится агентом
 
 До сих пор в цикле порядок работы диктовали мы. В RAG из прошлых частей маршрут жёсткий: вопрос пользователя - поиск по базе - найденные куски плюс вопрос в модель - ответ. Программа написана заранее, модель на каждом шаге делает ровно одну вещь.
@@ -43,12 +41,10 @@
 Первая - тихая порча истории. Вот узел модели из книги (листинг 11.8, раздел 11.8):
 
 ```python
-def llm_node(state: AgentState):
+def llm_node(state):
     current_messages = state["messages"]
-    system_message = SystemMessage(content="... Only use the tools ...")
-    current_messages.append(system_message)   # мутация списка состояния
-    response_message = llm_with_tools.invoke(current_messages)
-    return {"messages": [response_message]}
+    current_messages.append(system_message)  # мутация списка состояния
+    return {"messages": [llm.invoke(current_messages)]}
 ```
 
 `current_messages` это не копия, а то же самое, что лежит в `state["messages"]`: присваивание списка в Python копии не делает. `append` дописывает в состояние в обход механизма, который склеивает ходы. Результат виден в трассе книги: системный промпт болтается в конце истории и добавляется заново на каждом обороте. Урок: в состояние пишут только через отведённый для этого механизм, алиасы - источник багов, которые живут неделями.
@@ -79,15 +75,8 @@ def search_travel_info(query: str) -> str:
 Пятая - недетерминированный мок. Демо-погода из листинга 11.10 - чистый рандом:
 
 ```python
-class WeatherForecastService:
-    _weather_options = ["sunny", "foggy", "rainy", "windy"]
-
-    @classmethod
-    def get_forecast(cls, town):
-        weather = random.choice(cls._weather_options)
-        temperature = random.randint(cls._temp_min, cls._temp_max)
-        return WeatherForecast(town=town, weather=weather,
-                               temperature=temperature)
+weather = random.choice(["sunny", "foggy", "rainy", "windy"])
+temperature = random.randint(18, 31)  # WeatherForecastService, листинг 11.10
 ```
 
 Задание "найти город с хорошей погодой" при этом проверяется суждением модели. Сколько оборотов сделает агент? Сколько раз не повезёт с рандомом. Пример красивый, вывод из него не сделан: критерий качества должен жить в коде или в структурированной проверке, не в настроении модели. Иначе отладка невозможна - воспроизвести сценарий нельзя.
@@ -138,9 +127,9 @@ Supervisor-схема вносит четыре новые проблемы, и 
 
 # Что забрать в работу
 
-1. Инструмент - контракт. Модель выбирает по описанию, не по коду: описание пишется как документация для нового сотрудника.
+1. Инструмент - контракт: модель выбирает по описанию. Пишите его как документацию для нового сотрудника.
 2. Ограничения - в код с первого дня: счётчик шагов, лимиты, подтверждение действий с последствиями. Промпт - рычаг мягкий.
-3. Один агент с одним инструментом, потом второй инструмент, и только потом команда. Мультиагентность не делает систему умнее - она делает её дороже и сложнее в отладке.
+3. Один инструмент, второй, и только потом команда. Мультиагентность не делает систему умнее - дороже и сложнее в отладке.
 4. Роутер или supervisor - решает один вопрос: должен ли координатор увидеть результат и продолжить работу.
 5. Изоляция контекстов: агент отдаёт наружу итог, не процесс. Иначе состояние команды растёт линейно и съедает деньги.
 
