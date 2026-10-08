@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>От цепочки к команде: роутер и supervisor</title>
+<style>
+body{font-family:var(--font-sans,system-ui);color:var(--foreground);margin:0;padding:8px 4px;font-size:15px;line-height:1.5}
+.wrap{max-width:980px}
+svg{width:100%;height:auto;display:block}
+.box{fill:var(--card);stroke:var(--border);stroke-width:1.5}
+.box-hl{fill:none;stroke:var(--accent);stroke-width:2.5}
+.t-main{font-size:14.5px;font-weight:700;fill:var(--foreground)}
+.t-sub{font-size:11.5px;fill:var(--muted-foreground)}
+.t-tech{font-size:11px;fill:var(--foreground);opacity:.85}
+.t-hl{font-size:12.5px;font-weight:700;fill:var(--accent)}
+.arrow{stroke:var(--muted-foreground);stroke-width:1.8;fill:none;marker-end:url(#ah2)}
+.arrow-b{stroke:var(--accent);stroke-width:1.8;fill:none;marker-end:url(#ah3);stroke-dasharray:5,4}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg viewBox="0 0 980 600" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="ah2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--muted-foreground)"/></marker>
+<marker id="ah3" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--accent)"/></marker>
+</defs>
+
+<!-- Роутер: билет в одну сторону -->
+<rect x="30" y="16" width="440" height="250" class="box"/>
+<text x="50" y="42" class="t-main">ГЛАВА 12а — РОУТЕР: билет в одну сторону</text>
+<rect x="190" y="58" width="120" height="44" class="box box-hl"/>
+<text x="250" y="78" text-anchor="middle" class="t-main">вопрос</text>
+<text x="250" y="94" text-anchor="middle" class="t-sub">классификация</text>
+<line x1="250" y1="102" x2="120" y2="140" class="arrow"/>
+<line x1="250" y1="102" x2="380" y2="140" class="arrow"/>
+<rect x="50" y="144" width="140" height="52" class="box"/>
+<text x="120" y="166" text-anchor="middle" class="t-tech">агент travel_info</text>
+<text x="120" y="182" text-anchor="middle" class="t-sub">свои инструменты</text>
+<rect x="290" y="144" width="140" height="52" class="box"/>
+<text x="360" y="166" text-anchor="middle" class="t-tech">агент booking</text>
+<text x="360" y="182" text-anchor="middle" class="t-sub">свой SQL</text>
+<line x1="120" y1="196" x2="120" y2="228" class="arrow"/>
+<line x1="360" y1="196" x2="360" y2="228" class="arrow"/>
+<text x="250" y="246" text-anchor="middle" class="t-sub">ответы идут наружу, состояние НЕ возвращается координатору</text>
+<text x="50" y="246" class="t-hl">не пройдёт:</text>
+<text x="132" y="246" class="t-tech">"город с погодой + цена там"</text>
+
+<!-- Supervisor -->
+<rect x="510" y="16" width="440" height="250" class="box"/>
+<text x="530" y="42" class="t-main">ГЛАВА 12б — SUPERVISOR: обратный билет</text>
+<rect x="670" y="58" width="120" height="44" class="box box-hl"/>
+<text x="730" y="78" text-anchor="middle" class="t-main">supervisor</text>
+<text x="730" y="94" text-anchor="middle" class="t-sub">план + синтез</text>
+<text x="730" y="116" text-anchor="middle" class="t-sub">агент = инструмент</text>
+<line x1="690" y1="102" x2="600" y2="140" class="arrow"/>
+<line x1="770" y1="102" x2="860" y2="140" class="arrow"/>
+<rect x="530" y="144" width="140" height="52" class="box"/>
+<text x="600" y="166" text-anchor="middle" class="t-tech">агент travel_info</text>
+<text x="600" y="182" text-anchor="middle" class="t-sub">transfer_to_...</text>
+<rect x="790" y="144" width="140" height="52" class="box"/>
+<text x="860" y="166" text-anchor="middle" class="t-tech">агент booking</text>
+<text x="860" y="182" text-anchor="middle" class="t-sub">transfer_to_...</text>
+<path d="M 600 140 Q 600 122 665 104" class="arrow-b"/>
+<path d="M 860 140 Q 860 122 795 104" class="arrow-b"/>
+<text x="730" y="230" text-anchor="middle" class="t-sub">результат возвращается координатору для синтеза</text>
+<text x="530" y="246" class="t-hl">цена:</text>
+<text x="580" y="246" class="t-tech">супервизор сильнее агентов — главный расход</text>
+
+<!-- Наши риски -->
+<rect x="30" y="290" width="920" height="96" class="box"/>
+<text x="50" y="316" class="t-main">Рисков у главы пять, книга их не разбирает:</text>
+<text x="50" y="338" class="t-tech">рекурсия без предела на уровне супервизора · общее состояние растёт линейно (operator.add всё склеивает) · промпт-инъекции из внешних API в план супервизора · SQL-тулкит с записью в базу · экономика = выбор модели супервизора</text>
+<text x="50" y="366" class="t-sub">наш ответ: изоляция контекстов — каждый агент в своём подграфе, наружу только итог (выстрадано на гонках параллельных детей)</text>
+
+<!-- Ошибки гл 11 -->
+<rect x="30" y="410" width="920" height="100" class="box"/>
+<text x="50" y="436" class="t-main">Глава 11 ловит сама себя — 6 ошибок учебного кода:</text>
+<text x="50" y="458" class="t-tech">алиасинг состояния мимо редуктора · нет счётчика шагов · "чат-бот" без памяти (stateless single-turn) · сырой HTML в ToolMessage · random-мок: число итераций от везения · промпт как единственный рычаг</text>
+<text x="50" y="486" class="t-sub">правило: ограничения — в коде (счётчик, пороги, подтверждения), промпт — первый рычаг, не единственный (tool_choice="required")</text>
+
+<!-- Наши аналоги -->
+<rect x="30" y="534" width="920" height="50" class="box"/>
+<text x="50" y="556" class="t-hl">Наш supervisor:</text>
+<text x="165" y="556" class="t-tech">канбан-оркестрация Hermes — 6 профилей-ролей, каждая передача = карточка в базе задач, задача переживает перезапуск</text>
+<text x="50" y="574" class="t-tech">не состояние в общем словаре, а внешняя память задач — и это снимает главный риск паттерна</text>
+</svg>
+</div>
+</body>
+</html>
