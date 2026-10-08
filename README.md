@@ -25,6 +25,7 @@
 | Глава | Статья | Черновик |
 |---|---|---|
 | 1 | [Книжка в самолёт: глава 1](https://telegra.ph/Knizhka-v-samolyot-glava-1-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), канал msg 332 |
+| 6а+6б (главы 11-12 книги) | [Агенты: учим модель звать инструменты](https://telegra.ph/Agenty-uchim-model-zvat-instrumenty-10-08) + [Мультиагентность: роутер, supervisor](https://telegra.ph/Multiagentnost-router-supervisor-i-cena-komandy-10-08) | опубликованы: [6а](https://hermes-agent.ru/news/agenty-uchim-model-zvat-instrumenty/), [6б](https://hermes-agent.ru/news/multiagentnost-router-supervisor-cena-komandy/), канал msg 343 |
 | 5 (главы 8-10 книги) | [Продвинутый RAG: четыре места вокруг ретривера](https://telegra.ph/Prodvinutyj-RAG-chetyre-mesta-vokrug-retrivera-10-08) | опубликована: [сайт](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/), канал msg 341 |
 | 4 (главы 6-7 книги) | [RAG в глубину: 94 колонны и главная ловушка](https://telegra.ph/RAG-v-glubinu-94-kolonny-i-glavnaya-lovushka-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), канал msg 338 |
 | 3 (глава 5 книги) | [От цепочек к графам: LangGraph и цена свободы](https://telegra.ph/Ot-cepochek-k-grafam-LangGraph-i-cena-svobody-10-06) | опубликована: [сайт](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), канал msg 337 |

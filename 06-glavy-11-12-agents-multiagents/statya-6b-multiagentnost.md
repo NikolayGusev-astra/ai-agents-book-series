@@ -2,7 +2,7 @@
 
 Сложность: средняя
 
-Шестая часть цикла (вторая половина) по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Глава 12: мультиагентные системы. Первая половина: [агент и инструменты изнутри](https://telegra.ph/Agenty-uchim-model-zvat-instrumenty-CHERNOVIK-dlya-vychitki-10-08). Предыдущие части: [фундамент](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), [суммаризация](https://hermes-agent.ru/news/summa-mr-vs-refine/), [LangGraph](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), [RAG в глубину](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), [продвинутый RAG](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/).
+Шестая часть цикла (вторая половина) по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Глава 12: мультиагентные системы. Первая половина: [агент и инструменты изнутри](https://telegra.ph/Agenty-uchim-model-zvat-instrumenty-10-08). Предыдущие части: [фундамент](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), [суммаризация](https://hermes-agent.ru/news/summa-mr-vs-refine/), [LangGraph](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), [RAG в глубину](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), [продвинутый RAG](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/).
 
 # Мультиагентность: когда один агент перестаёт хватать
 
