@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>MCP и чекпоинты памяти</title>
+<style>
+body{font-family:var(--font-sans,system-ui);color:var(--foreground);margin:0;padding:8px 4px;font-size:15px;line-height:1.5}
+.wrap{max-width:1000px}
+svg{width:100%;height:auto;display:block}
+.box{fill:var(--card);stroke:var(--border);stroke-width:1.5}
+.box-hl{fill:none;stroke:var(--accent);stroke-width:2.5}
+.t-main{font-size:16px;font-weight:700;fill:var(--foreground)}
+.t-sub{font-size:13px;fill:var(--muted-foreground)}
+.t-tech{font-size:12.5px;fill:var(--foreground);opacity:.85}
+.t-hl{font-size:14px;font-weight:700;fill:var(--accent)}
+.arrow{stroke:var(--muted-foreground);stroke-width:2;fill:none;marker-end:url(#ah13)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="ah13" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<polygon points="0 0, 9 3.5, 0 7" fill="var(--muted-foreground)"/>
+</marker>
+</defs>
+
+<!-- ЛЕВАЯ ПОЛОВИНА: MCP -->
+<rect x="20" y="16" width="470" height="300" class="box"/>
+<text x="40" y="44" class="t-main">БЕЗ MCP: обвязку пишет потребитель</text>
+<text x="40" y="70" class="t-tech">10 команд × 20 агентов = 200 копий одной обвязки</text>
+<text x="40" y="94" class="t-tech">(аутентификация, лимиты, ошибки - каждый раз заново)</text>
+
+<text x="40" y="140" class="t-main">С MCP: обвязку пишет поставщик</text>
+<rect x="40" y="156" width="180" height="56" class="box box-hl"/>
+<text x="130" y="178" text-anchor="middle" class="t-tech">MCP-сервер</text>
+<text x="130" y="196" text-anchor="middle" class="t-sub">погодный сервис</text>
+<rect x="290" y="156" width="180" height="56" class="box"/>
+<text x="380" y="178" text-anchor="middle" class="t-tech">Хост (агент)</text>
+<text x="380" y="196" text-anchor="middle" class="t-sub">клиент внутри</text>
+<line x1="224" y1="184" x2="286" y2="184" class="arrow"/>
+<text x="255" y="172" text-anchor="middle" class="t-sub">протокол</text>
+<text x="40" y="238" class="t-tech">инструмент для агента неотличим от локального,</text>
+<text x="40" y="256" class="t-tech">но путь исполнения - асинхронный (частая ошибка: забыть await)</text>
+<text x="40" y="292" class="t-sub">транспорт: stdio (локально, дочерний процесс) или HTTP (прод)</text>
+
+<!-- ПРАВАЯ ПОЛОВИНА: чекпоинты -->
+<rect x="510" y="16" width="470" height="300" class="box"/>
+<text x="530" y="44" class="t-main">ПАМЯТЬ: чекпоинты, не список сообщений</text>
+<text x="530" y="70" class="t-tech">снимок ПОЛНОГО состояния графа после каждого узла:</text>
+<text x="530" y="90" class="t-tech">сообщения + результаты инструментов + переменные + метаданные</text>
+<rect x="530" y="106" width="130" height="40" class="box"/>
+<text x="595" y="126" text-anchor="middle" class="t-sub">шаг 1</text>
+<text x="595" y="140" text-anchor="middle" class="t-tech">снимок</text>
+<rect x="690" y="106" width="130" height="40" class="box"/>
+<text x="755" y="126" text-anchor="middle" class="t-sub">шаг 2</text>
+<text x="755" y="140" text-anchor="middle" class="t-tech">снимок</text>
+<rect x="840" y="106" width="120" height="40" class="box"/>
+<text x="900" y="126" text-anchor="middle" class="t-sub">шаг N</text>
+<text x="900" y="140" text-anchor="middle" class="t-tech">снимок</text>
+<text x="530" y="178" class="t-hl">Один механизм - три сценария:</text>
+<text x="530" y="202" class="t-tech">1. многоходовой диалог ("а в том же городе?")</text>
+<text x="530" y="222" class="t-tech">2. восстановление после сбоя с последнего снимка</text>
+<text x="530" y="242" class="t-tech">3. human-in-the-loop: стоп для согласования, продолжение</text>
+<text x="530" y="278" class="t-sub">ключ: thread_id связывает снимки с сессией. InMemory - SQLite - PostgreSQL</text>
+
+<!-- Ловушка -->
+<rect x="20" y="340" width="960" height="100" class="box"/>
+<text x="40" y="368" class="t-hl">Ловушка из скобок в книге:</text>
+<text x="40" y="392" class="t-tech">use_responses_api=True БЕЗ use_previous_response_id=True - LangChain шлёт полную историю, Responses API считает это повторной подачей = ошибка</text>
+<text x="40" y="414" class="t-tech">второй флаг - условие корректности, не оптимизация. Побочный эффект: сырой контекст живёт у OpenAI, не у тебя - учесть в политиках данных</text>
+
+<!-- Наши заметки -->
+<rect x="20" y="464" width="960" height="80" class="box"/>
+<text x="40" y="490" class="t-hl">У нас: весь корпоративный стек - MCP-серверы под Hermes-хостом (Mattermost, Confluence, OntoNet)</text>
+<text x="40" y="512" class="t-tech">урок эксплуатации: чтение из MCP безопасно, запись = изменение живой системы, каждую запись проверять контрактом</text>
+<text x="40" y="532" class="t-tech">память трёхслойная: сессия (краткосрочная) + профиль + база знаний (долгосрочная) - долгосрочная ищется, а не жмётся в промпт</text>
+</svg>
+</div>
+</body>
+</html>
