@@ -70,11 +70,27 @@ svg{width:100%;height:auto;display:block}
 <text x="40" y="392" class="t-tech">use_responses_api=True БЕЗ use_previous_response_id=True - LangChain шлёт полную историю, Responses API считает это повторной подачей = ошибка</text>
 <text x="40" y="414" class="t-tech">второй флаг - условие корректности, не оптимизация. Побочный эффект: сырой контекст живёт у OpenAI, не у тебя - учесть в политиках данных</text>
 
-<!-- Наши заметки -->
-<rect x="20" y="464" width="960" height="80" class="box"/>
-<text x="40" y="490" class="t-hl">У нас: весь корпоративный стек - MCP-серверы под Hermes-хостом (Mattermost, Confluence, OntoNet)</text>
-<text x="40" y="512" class="t-tech">урок эксплуатации: чтение из MCP безопасно, запись = изменение живой системы, каждую запись проверять контрактом</text>
-<text x="40" y="532" class="t-tech">память трёхслойная: сессия (краткосрочная) + профиль + база знаний (долгосрочная) - долгосрочная ищется, а не жмётся в промпт</text>
+<!-- Наши заметки: живой конфиг -->
+<rect x="20" y="340" width="470" height="204" class="box"/>
+<text x="40" y="368" class="t-hl">Наш конфиг Hermes - 10 серверов, оба транспорта:</text>
+<text x="40" y="392" class="t-tech">stdio: auto-rag, jira, confluence, bitbucket</text>
+<text x="40" y="410" class="t-tech">rupost-mail, protopack - процессы Astra-стека</text>
+<text x="40" y="428" class="t-tech">HTTP: context7 (доки), ontonet (онтологии), lodestone</text>
+<text x="40" y="452" class="t-tech">восемь систем, ноль обвязок в нашем коде - всё конфигом</text>
+<text x="40" y="470" class="t-tech">обновили Jira-MCP - код агента не меняется</text>
+<text x="40" y="500" class="t-tech">эксплуатация: чтение безопасно, запись = изменение живой</text>
+<text x="40" y="518" class="t-tech">системы, запись проверять контрактом; стек сверять еженедельно</text>
+
+<!-- Память заметки -->
+<rect x="510" y="340" width="470" height="204" class="box"/>
+<text x="530" y="368" class="t-hl">Наша память против книжной:</text>
+<text x="530" y="392" class="t-tech">краткосрочная = сессия (как thread_id в книге)</text>
+<text x="530" y="410" class="t-tech">долгосрочная пользовательская = память профиля</text>
+<text x="530" y="428" class="t-tech">долгосрочная общая = база знаний (llm-wiki)</text>
+<text x="530" y="452" class="t-tech">ключевое отличие: долгосрочная ИЩЕТСЯ, а не поднимается</text>
+<text x="530" y="470" class="t-tech">целиком - иначе затопление контекста</text>
+<text x="530" y="500" class="t-tech">human-in-the-loop у нас: ревью канбан-задач и owner-gate</text>
+<text x="530" y="518" class="t-tech">на публикации - тот же механизм из книги</text>
 </svg>
 </div>
 </body>
