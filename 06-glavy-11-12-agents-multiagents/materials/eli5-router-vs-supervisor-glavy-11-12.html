@@ -9,17 +9,17 @@ body{font-family:var(--font-sans,system-ui);color:var(--foreground);margin:0;pad
 svg{width:100%;height:auto;display:block}
 .box{fill:var(--card);stroke:var(--border);stroke-width:1.5}
 .box-hl{fill:none;stroke:var(--accent);stroke-width:2.5}
-.t-main{font-size:14.5px;font-weight:700;fill:var(--foreground)}
-.t-sub{font-size:11.5px;fill:var(--muted-foreground)}
-.t-tech{font-size:11px;fill:var(--foreground);opacity:.85}
-.t-hl{font-size:12.5px;font-weight:700;fill:var(--accent)}
+.t-main{font-size:17px;font-weight:700;fill:var(--foreground)}
+.t-sub{font-size:13.5px;fill:var(--muted-foreground)}
+.t-tech{font-size:13px;fill:var(--foreground);opacity:.85}
+.t-hl{font-size:14.5px;font-weight:700;fill:var(--accent)}
 .arrow{stroke:var(--muted-foreground);stroke-width:1.8;fill:none;marker-end:url(#ah2)}
 .arrow-b{stroke:var(--accent);stroke-width:1.8;fill:none;marker-end:url(#ah3);stroke-dasharray:5,4}
 </style>
 </head>
 <body>
 <div class="wrap">
-<svg viewBox="0 0 980 600" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 980 780" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <marker id="ah2" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--muted-foreground)"/></marker>
 <marker id="ah3" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="var(--accent)"/></marker>
@@ -67,22 +67,27 @@ svg{width:100%;height:auto;display:block}
 <text x="580" y="246" class="t-tech">супервизор сильнее агентов — главный расход</text>
 
 <!-- Наши риски -->
-<rect x="30" y="290" width="920" height="96" class="box"/>
+<rect x="30" y="290" width="920" height="130" class="box"/>
 <text x="50" y="316" class="t-main">Рисков у главы пять, книга их не разбирает:</text>
-<text x="50" y="338" class="t-tech">рекурсия без предела на уровне супервизора · общее состояние растёт линейно (operator.add всё склеивает) · промпт-инъекции из внешних API в план супервизора · SQL-тулкит с записью в базу · экономика = выбор модели супервизора</text>
-<text x="50" y="366" class="t-sub">наш ответ: изоляция контекстов — каждый агент в своём подграфе, наружу только итог (выстрадано на гонках параллельных детей)</text>
+<text x="50" y="338" class="t-tech">рекурсия без предела на уровне супервизора · общее состояние растёт линейно</text>
+<text x="50" y="356" class="t-tech">промпт-инъекции из внешних API в план супервизора · SQL-доступ с записью в базу</text>
+<text x="50" y="374" class="t-tech">экономика системы = выбор модели супервизора</text>
+<text x="50" y="400" class="t-sub">наш ответ: изоляция контекстов — каждый агент в своём подграфе, наружу только итог (выстрадано на гонках параллельных детей)</text>
 
 <!-- Ошибки гл 11 -->
-<rect x="30" y="410" width="920" height="100" class="box"/>
+<rect x="30" y="444" width="920" height="130" class="box"/>
 <text x="50" y="436" class="t-main">Глава 11 ловит сама себя — 6 ошибок учебного кода:</text>
-<text x="50" y="458" class="t-tech">алиасинг состояния мимо редуктора · нет счётчика шагов · "чат-бот" без памяти (stateless single-turn) · сырой HTML в ToolMessage · random-мок: число итераций от везения · промпт как единственный рычаг</text>
-<text x="50" y="486" class="t-sub">правило: ограничения — в коде (счётчик, пороги, подтверждения), промпт — первый рычаг, не единственный (tool_choice="required")</text>
+<text x="50" y="492" class="t-tech">алиасинг состояния мимо редуктора · нет счётчика шагов · "чат-бот" без памяти</text>
+<text x="50" y="510" class="t-tech">сырой HTML в ответе инструмента · random-мок: число итераций зависит от везения</text>
+<text x="50" y="528" class="t-tech">промпт как единственный рычаг управления</text>
+<text x="50" y="554" class="t-sub">правило: ограничения — в коде (счётчик, пороги, подтверждения), промпт — первый рычаг, не единственный (tool_choice="required")</text>
 
 <!-- Наши аналоги -->
-<rect x="30" y="534" width="920" height="50" class="box"/>
-<text x="50" y="556" class="t-hl">Наш supervisor:</text>
-<text x="165" y="556" class="t-tech">канбан-оркестрация Hermes — 6 профилей-ролей, каждая передача = карточка в базе задач, задача переживает перезапуск</text>
-<text x="50" y="574" class="t-tech">не состояние в общем словаре, а внешняя память задач — и это снимает главный риск паттерна</text>
+<rect x="30" y="598" width="920" height="76" class="box"/>
+<text x="50" y="624" class="t-hl">Наш supervisor:</text>
+<text x="165" y="624" class="t-tech">канбан-оркестрация Hermes — 6 профилей-ролей, каждая передача = карточка в базе</text>
+<text x="165" y="642" class="t-tech">задача переживает перезапуск и возвращается на правку</text>
+<text x="50" y="664" class="t-tech">не состояние в общем словаре, а внешняя память задач — это снимает главный риск паттерна</text>
 </svg>
 </div>
 </body>
