@@ -2,7 +2,7 @@
 
 Сложность: средняя
 
-Седьмая часть цикла по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Глава 13: MCP-серверы и память агента на чекпоинтах. Предыдущие части: [фундамент и промпты](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), [суммаризация с живым замером](https://hermes-agent.ru/news/summa-mr-vs-refine/), [LangGraph](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), [RAG в глубину](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), [продвинутый RAG](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/), [агенты](https://telegra.ph/Agenty-uchim-model-zvat-instrumenty-10-08) и [мультиагентность](https://telegra.ph/Multiagentnost-router-supervisor-i-cena-komandy-10-08).
+Седьмая часть цикла по книге [AI Agents and Applications](https://www.manning.com/books/ai-agents-and-applications) Роберто Инфанте (Manning, 2026). Глава 13: MCP-серверы и память агента на чекпоинтах. Предыдущие части: [фундамент и промпты](https://hermes-agent.ru/news/knizhka-v-samolyot-glava-1/), [суммаризация с живым замером](https://hermes-agent.ru/news/summa-mr-vs-refine/), [LangGraph](https://hermes-agent.ru/news/ot-cepocek-k-grafam-langgraph/), [RAG в глубину](https://hermes-agent.ru/news/rag-v-glubinu-94-kolonny/), [продвинутый RAG](https://hermes-agent.ru/news/prodvinutyj-rag-chetyre-mesta/), [агенты](https://hermes-agent.ru/news/agenty-uchim-model-zvat-instrumenty/) и [мультиагентность](https://hermes-agent.ru/news/multiagentnost-router-supervisor-cena-komandy/).
 
 # Зачем вообще MCP
 
