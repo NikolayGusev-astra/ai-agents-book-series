@@ -93,7 +93,7 @@ Only use the tools to find the information you need
 
 Работает. Но это мягкий контроль - модель может и ослушаться. Жёсткие аналоги: требовать вызов инструмента настройкой API, ставить проверку перед ответом. Правило: промпт - первый рычаг, не единственный; всё, что обязано произойти, закрепляется в коде.
 
-Продолжение - мультиагентность: роутер, supervisor и цена команды.
+Продолжение - [мультиагентность: роутер, supervisor и цена команды](https://telegra.ph/Multiagentnost-router-supervisor-CHERNOVIK-dlya-vychitki-10-08).
 
 Книга: AI Agents and Applications (Roberto Infante, Manning, 2026), глава 11.
 
